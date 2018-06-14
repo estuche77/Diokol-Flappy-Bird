@@ -1,11 +1,12 @@
 Bird = {}
 
-function Bird:new(xPos, yPos)
+function Bird:new(xPos, yPos, b)
     local bird = {
         x = xPos,
         y = yPos,
         width = 136/3,
         height = 96/3,
+        bottom = b,
         gravity = -10,
         textures = {},
         hovering = 0,
@@ -43,7 +44,9 @@ end
 
 function Bird:down()
     -- The y axis is changed based on the current gravity
-    self.y = self.y + self.gravity
+    if self.y < self.bottom then
+        self.y = self.y + self.gravity
+    end
 
     -- While a little later from max altitude
     if self.gravity < 3 then
@@ -69,6 +72,16 @@ function Bird:reset(y)
     self.y = y
     self.rotation = 2*PI
     self.gravity = -10
+end
+
+function Bird:getY()
+    -- Returns Y for collision detection
+    return self.y
+end
+
+function Bird:getX()
+    -- Returns X for score count
+    return self.x
 end
 
 function Bird:addTexture(filename)

@@ -12,6 +12,8 @@ local height = 704
 local speed = 2
 local gameStates = {"new", "playing", "over"}
 local state = 1
+local score = 0
+local scoreSwitch = false
 
 function setup()
 	-- Setting up the screen size
@@ -50,7 +52,7 @@ function setup()
 	end
 
 	-- Prepares bird data
-	bird = Bird:new(width/2, height/2)
+	bird = Bird:new(width/2, height/2, height-110)
 	bird:addTexture("textures/bird_down.png")
 	bird:addTexture("textures/bird_mid.png")
 	bird:addTexture("textures/bird_up.png")
@@ -65,11 +67,11 @@ function draw()
 		pipe:display()
 	end
 
-	-- Draw ground
-	ground:display()
-
 	-- Draw bird
 	bird:display()
+
+	-- Draw ground
+	ground:display()
 
 	-- If is a new game
 	if gameStates[state] == "new" then
@@ -91,13 +93,30 @@ function draw()
 				pipe:reset(width + 75/2)
 			end
 
+			if pipe:getX() < bird:getX() and scoreSwitch then
+				score = score + 1
+				scoreSwitch = not scoreSwitch
+				print(score)
+			end
+
+			if pipe:getX() < bird:getX() and scoreSwitch then
+				score = score + 1
+				scoreSwitch = not scoreSwitch
+				print(score)
+			end
+
 			-- Check collision detection
-			if DoBoxesIntersect(bird:getBoundingBox(), pipe:getBoundingBoxes()[1]) then
+			if DoBoxesIntersect(bird:getBoundingBox(), pipe:getBoundingBoxes()[1]) or 
+			DoBoxesIntersect(bird:getBoundingBox(), pipe:getBoundingBoxes()[2]) then
+				-- Game over
 				state = 3
 			end
-			if DoBoxesIntersect(bird:getBoundingBox(), pipe:getBoundingBoxes()[2]) then
-				state = 3
-			end
+		end
+
+		-- Check for ground or sky collision
+		if bird:getY() > height-110 or bird:getY() < -10 then
+			-- Game over
+			state = 3
 		end
 
 		-- Move the ground
@@ -122,6 +141,7 @@ function keyPressed(key)
 		state = 1
 		resetPipes()
 		bird:reset(height/2)
+		score = 0
 	end
 end
 
