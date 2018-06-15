@@ -63,9 +63,9 @@ function setup()
 
 	-- Read best score
 	local lines = lines_from("data/BestScore")
-	BestSocre = 0
-	for k,v in pairs(lines) do
-		BestSocre = v
+	bestScore = 0
+	for k,value in pairs(lines) do
+		bestScore = tonumber(value)
 	end
 end
 
@@ -90,7 +90,7 @@ function draw()
 
 	-- Draw best score
 	textAlign(RIGHT)
-	text("Best: " .. BestSocre, width - 50, height - 50)
+	text("Best: " .. bestScore, width - 50, height - 50)
 
 	-- If is a new game
 	if gameStates[state] == "new" then
@@ -118,6 +118,14 @@ function draw()
 			and not scoreSwitch then
 				score = score + 1
 				scoreSwitch = true
+
+				print(score, bestScore)
+				-- Check if it is the best scores
+				if score > bestScore then
+					-- Save into file
+					append_to_file("data/BestScore", score .. '\n')
+					bestScore = score
+				end
 			end
 
 			-- The tube had been already counted
