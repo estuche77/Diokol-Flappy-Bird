@@ -1,4 +1,5 @@
 -- Jason Latouche
+-- Emanuel Alvarado
 -- Costa Rica Institute of Technology
 -- Computer Science
 -- June, 2018
