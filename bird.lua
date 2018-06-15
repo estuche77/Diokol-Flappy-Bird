@@ -92,5 +92,5 @@ end
 
 function Bird:getBoundingBox()
     -- Creates a bounding box table
-    return {x = self.x, y = self.y, width = self.width, height = self.height}
+    return {x = self.x, y = self.y, width = self.width/2, height = self.height/2}
 end

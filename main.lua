@@ -30,6 +30,10 @@ function setup()
 	imageMode(CENTER)
 	ellipseMode(CENTER)
 
+	-- Prepares and load font
+	local f = loadFont("data/Vera.ttf", 40)
+	textFont(f)
+
 	-- Prepares background textures
 	background = loadImage("textures/background.png")
 
@@ -56,6 +60,13 @@ function setup()
 	bird:addTexture("textures/bird_down.png")
 	bird:addTexture("textures/bird_mid.png")
 	bird:addTexture("textures/bird_up.png")
+
+	-- Read best score
+	local lines = lines_from("data/BestScore")
+	BestSocre = 0
+	for k,v in pairs(lines) do
+		BestSocre = v
+	end
 end
 
 function draw()
@@ -72,6 +83,14 @@ function draw()
 
 	-- Draw ground
 	ground:display()
+
+	-- Draw score
+	textAlign(LEFT)
+	text(score, 50, height - 50)
+
+	-- Draw best score
+	textAlign(RIGHT)
+	text("Best: " .. BestSocre, width - 50, height - 50)
 
 	-- If is a new game
 	if gameStates[state] == "new" then
@@ -93,16 +112,19 @@ function draw()
 				pipe:reset(width + 75/2)
 			end
 
-			if pipe:getX() < bird:getX() and scoreSwitch then
+			-- Check for tubes pass
+			if DoBoxesIntersect(bird:getBoundingBox(), pipe:getGapBoundingBox())
+			and pipe:getX() < bird:getX()
+			and not scoreSwitch then
 				score = score + 1
-				scoreSwitch = not scoreSwitch
-				print(score)
+				scoreSwitch = true
 			end
 
-			if pipe:getX() < bird:getX() and scoreSwitch then
-				score = score + 1
-				scoreSwitch = not scoreSwitch
-				print(score)
+			-- The tube had been already counted
+			if not DoBoxesIntersect(bird:getBoundingBox(), pipe:getGapBoundingBox())
+			and pipe:getX() < bird:getX()
+			and scoreSwitch then
+				scoreSwitch = false
 			end
 
 			-- Check collision detection
@@ -157,4 +179,41 @@ end
 function DoBoxesIntersect(a, b)
 	return (math.abs(a.x - b.x) < (a.width + b.width) / 2) and
 	(math.abs(a.y - b.y) < (a.height + b.height) / 2)
+end
+
+-- Functions for file writing
+-- https://www.tutorialspoint.com/lua/lua_file_io.htm
+function append_to_file(filename, line)
+	-- Opens a file in append mode
+	file = io.open(filename, "a")
+
+	-- sets the default output file as test.lua
+	io.output(file)
+
+	-- appends a word test to the last line of the file
+	io.write(line)
+
+	-- closes the open file
+	io.close(file)
+end
+
+-- Functions for file reading
+-- http://lua-users.org/wiki/FileInputOutput
+
+-- see if the file exists
+function file_exists(file)
+	local f = io.open(file, "rb")
+	if f then f:close() end
+	return f ~= nil
+end
+
+-- get all lines from a file, returns an empty 
+-- list/table if the file does not exist
+function lines_from(file)
+	if not file_exists(file) then return {} end
+	lines = {}
+	for line in io.lines(file) do 
+		lines[#lines + 1] = line
+	end
+	return lines
 end

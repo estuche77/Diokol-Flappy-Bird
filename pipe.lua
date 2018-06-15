@@ -55,3 +55,8 @@ function Pipe:getBoundingBoxes()
         {x = self.x, y = self.y + self.altitude, width = self.width, height = self.height}
     }
 end
+
+function Pipe:getGapBoundingBox()
+    -- Creates a bounding box for the mid section
+    return {x = self.x, y = self.y + self.altitude/2, width = self.width/2, height = self.height}
+end
